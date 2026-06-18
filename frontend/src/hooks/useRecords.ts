@@ -12,13 +12,11 @@ interface Pagination {
 
 export function useRecords() {
   const [records, setRecords] = useState<WeatherRecord[]>([]);
-  const [pagination, setPagination] = useState<Pagination>({
-    total: 0, page: 1, limit: 10, totalPages: 0,
-  });
+  const [pagination, setPagination] = useState<Pagination>({ total: 0, page: 1, limit: 10, totalPages: 0 });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetch = useCallback(async (params: RecordQueryParams = {}) => {
+  const loadRecords = useCallback(async (params: RecordQueryParams = {}) => {
     setLoading(true);
     setError(null);
     try {
@@ -32,7 +30,7 @@ export function useRecords() {
     }
   }, []);
 
-  const remove = useCallback(async (id: string) => {
+  const removeRecord = useCallback(async (id: string) => {
     await recordApi.delete(id);
     setRecords((prev) => prev.filter((r) => r.id !== id));
   }, []);
@@ -42,5 +40,5 @@ export function useRecords() {
     setRecords((prev) => prev.filter((r) => !ids.includes(r.id)));
   }, []);
 
-  return { records, pagination, loading, error, fetch, remove, removeMany };
+  return { records, pagination, loading, error, loadRecords, removeRecord, removeMany };
 }

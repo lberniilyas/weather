@@ -1,13 +1,24 @@
 import { Router } from 'express';
+import {
+  getRecords,
+  getRecordById,
+  createRecord,
+  updateRecord,
+  deleteRecord,
+  bulkDeleteRecords,
+  deleteAllRecords,
+} from '../controllers/recordController';
 
 const router = Router();
 
-// GET    /api/records          — list with pagination/search/sort/filter
-// POST   /api/records          — create
-// GET    /api/records/:id      — read one
-// PATCH  /api/records/:id      — update
-// DELETE /api/records/:id      — delete one
-// DELETE /api/records          — bulk delete (body: { ids })
-// DELETE /api/records/all      — delete all
+// IMPORTANT: specific paths before parameterised :id
+router.delete('/all', deleteAllRecords);
+router.delete('/', bulkDeleteRecords);
+
+router.get('/', getRecords);
+router.post('/', createRecord);
+router.get('/:id', getRecordById);
+router.patch('/:id', updateRecord);
+router.delete('/:id', deleteRecord);
 
 export default router;

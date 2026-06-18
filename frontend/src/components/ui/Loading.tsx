@@ -27,11 +27,11 @@ export function SkeletonCard({ className }: { className?: string }) {
 export function LoadingOverlay({ message = 'Loading...' }: { message?: string }) {
   return (
     <div
-      className="flex flex-col items-center justify-center gap-3 py-12 text-gray-500"
+      className="flex flex-col items-center justify-center gap-3 py-12 text-slate-400"
       role="status"
       aria-live="polite"
     >
-      <Spinner className="h-8 w-8" />
+      <Spinner className="h-8 w-8 text-blue-400" />
       <p className="text-sm">{message}</p>
     </div>
   );

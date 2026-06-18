@@ -1,25 +1,63 @@
 import type { WeatherRecord } from '@prisma/client';
 
-// Serialises records to JSON string
+function formatDate(d: Date): string {
+  return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
 export function toJSON(records: WeatherRecord[]): string {
-  void records;
-  throw new Error('exportService.toJSON — to be implemented');
+  return JSON.stringify(
+    records.map((r) => ({
+      id: r.id,
+      location: r.location,
+      latitude: r.latitude,
+      longitude: r.longitude,
+      startDate: r.startDate,
+      endDate: r.endDate,
+      temperature: r.temperature,
+      humidity: r.humidity,
+      condition: r.condition,
+      notes: r.notes,
+      createdAt: r.createdAt,
+    })),
+    null,
+    2
+  );
 }
 
-// Serialises records to CSV string
 export function toCSV(records: WeatherRecord[]): string {
-  void records;
-  throw new Error('exportService.toCSV — to be implemented');
+  const headers = ['ID', 'Location', 'Latitude', 'Longitude', 'Start Date', 'End Date', 'Temperature (°C)', 'Humidity (%)', 'Condition', 'Notes', 'Created At'];
+  const escape = (v: string | null | undefined) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+
+  const rows = records.map((r) =>
+    [
+      escape(r.id),
+      escape(r.location),
+      r.latitude,
+      r.longitude,
+      escape(formatDate(r.startDate)),
+      escape(formatDate(r.endDate)),
+      r.temperature,
+      r.humidity,
+      escape(r.condition),
+      escape(r.notes),
+      escape(r.createdAt.toISOString()),
+    ].join(',')
+  );
+
+  return [headers.join(','), ...rows].join('\n');
 }
 
-// Serialises records to Markdown table
 export function toMarkdown(records: WeatherRecord[]): string {
-  void records;
-  throw new Error('exportService.toMarkdown — to be implemented');
-}
+  const header = `# WeatherPro — Exported Records\n\n**Export date:** ${new Date().toLocaleString('en-GB')}\n**Total records:** ${records.length}\n\n`;
 
-// Generates a PDF buffer from records
-export async function toPDF(records: WeatherRecord[]): Promise<Buffer> {
-  void records;
-  throw new Error('exportService.toPDF — to be implemented');
+  const tableHeader = '| Location | Start | End | Temp (°C) | Humidity | Condition | Notes |\n|---|---|---|---|---|---|---|\n';
+
+  const rows = records
+    .map(
+      (r) =>
+        `| ${r.location} | ${formatDate(r.startDate)} | ${formatDate(r.endDate)} | ${r.temperature} | ${r.humidity}% | ${r.condition} | ${r.notes ?? '—'} |`
+    )
+    .join('\n');
+
+  return header + tableHeader + rows;
 }

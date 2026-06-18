@@ -1,10 +1,18 @@
 import { Router } from 'express';
+import {
+  searchWeather,
+  getWeatherByCoordinates,
+  getForecast,
+  getLocationSuggestions,
+  getYouTubeVideos,
+} from '../controllers/weatherController';
 
 const router = Router();
 
-// GET /api/weather/search?query=Paris
-// GET /api/weather/coordinates?lat=48.8566&lon=2.3522
-// GET /api/weather/forecast?query=Paris
-// GET /api/weather/suggestions?query=Pariss
+router.get('/search', searchWeather);
+router.get('/coordinates', getWeatherByCoordinates);
+router.get('/forecast', getForecast);
+router.get('/suggestions', getLocationSuggestions);
+router.get('/videos', getYouTubeVideos);
 
 export default router;

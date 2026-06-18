@@ -1,15 +1,22 @@
 'use client';
-// Leaflet map centred on the searched location with a marker and coordinate display
-// Uses dynamic import to avoid SSR issues with Leaflet
+import dynamic from 'next/dynamic';
+import { LoadingOverlay } from '@/components/ui/Loading';
 
-export function WeatherMap() {
+const MapClient = dynamic(() => import('./MapClient'), {
+  ssr: false,
+  loading: () => <LoadingOverlay message="Loading map…" />,
+});
+
+interface Props {
+  latitude: number;
+  longitude: number;
+  location: string;
+}
+
+export function WeatherMap({ latitude, longitude, location }: Props) {
   return (
-    <div
-      className="w-full h-80 rounded-xl overflow-hidden bg-gray-200 flex items-center justify-center"
-      role="region"
-      aria-label="Location map"
-    >
-      <p className="text-gray-500 text-sm">Map loads after a location is searched</p>
+    <div className="glass rounded-2xl overflow-hidden border border-white/10">
+      <MapClient latitude={latitude} longitude={longitude} location={location} />
     </div>
   );
 }
