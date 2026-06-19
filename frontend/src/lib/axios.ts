@@ -10,11 +10,19 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      const message = error.response.data?.error || 'An error occurred';
+      // data may be a raw string (when transformResponse bypasses JSON parse)
+      let parsed = error.response.data;
+      if (typeof parsed === 'string') {
+        try { parsed = JSON.parse(parsed); } catch { /* keep as string */ }
+      }
+      const message =
+        (typeof parsed === 'object' && parsed !== null ? parsed.error : null) ||
+        (typeof parsed === 'string' ? parsed : null) ||
+        'An error occurred';
       return Promise.reject(new Error(message));
     }
     if (error.request) {
-      return Promise.reject(new Error('Network error — please check your connection'));
+      return Promise.reject(new Error('Network error — make sure the backend server is running on port 5000'));
     }
     return Promise.reject(error);
   }

@@ -3,6 +3,17 @@ import prisma from '../config/database';
 import { geocodeLocation } from '../services/geocodingService';
 import { getWeatherByCoords } from '../services/weatherService';
 
+function dbError(err: unknown): string {
+  const msg = (err as Error).message ?? '';
+  if (msg.includes("Can't reach database") || msg.includes('connect ECONNREFUSED') || msg.includes('connection refused'))
+    return 'Database is unreachable. If you are using Supabase, please check your project is active (free-tier projects pause after inactivity — visit your Supabase dashboard to resume it).';
+  if (msg.includes('timed out') || msg.includes('ETIMEDOUT'))
+    return 'Database connection timed out. Please try again in a moment.';
+  // Strip internal Prisma invocation details (file paths etc.) from the message
+  const firstLine = msg.split('\n')[0].replace(/in C:\\.*?\.\w+:\d+:\d+/g, '').trim();
+  return firstLine || 'A database error occurred.';
+}
+
 export const getRecords = async (req: Request, res: Response): Promise<void> => {
   try {
     const page = Math.max(1, parseInt(req.query.page as string) || 1);
@@ -30,7 +41,7 @@ export const getRecords = async (req: Request, res: Response): Promise<void> => 
       data: { data: records, total, page, limit, totalPages: Math.ceil(total / limit) },
     });
   } catch (err) {
-    res.status(500).json({ success: false, error: (err as Error).message });
+    res.status(500).json({ success: false, error: dbError(err) });
   }
 };
 
@@ -40,7 +51,7 @@ export const getRecordById = async (req: Request, res: Response): Promise<void> 
     if (!record) { res.status(404).json({ success: false, error: 'Record not found' }); return; }
     res.json({ success: true, data: record });
   } catch (err) {
-    res.status(500).json({ success: false, error: (err as Error).message });
+    res.status(500).json({ success: false, error: dbError(err) });
   }
 };
 
@@ -78,7 +89,7 @@ export const createRecord = async (req: Request, res: Response): Promise<void> =
 
     res.status(201).json({ success: true, data: record });
   } catch (err) {
-    res.status(500).json({ success: false, error: (err as Error).message });
+    res.status(500).json({ success: false, error: dbError(err) });
   }
 };
 
@@ -120,7 +131,7 @@ export const updateRecord = async (req: Request, res: Response): Promise<void> =
     const record = await prisma.weatherRecord.update({ where: { id: req.params.id }, data: updateData });
     res.json({ success: true, data: record });
   } catch (err) {
-    res.status(500).json({ success: false, error: (err as Error).message });
+    res.status(500).json({ success: false, error: dbError(err) });
   }
 };
 
@@ -131,7 +142,7 @@ export const deleteRecord = async (req: Request, res: Response): Promise<void> =
     await prisma.weatherRecord.delete({ where: { id: req.params.id } });
     res.json({ success: true, message: 'Record deleted' });
   } catch (err) {
-    res.status(500).json({ success: false, error: (err as Error).message });
+    res.status(500).json({ success: false, error: dbError(err) });
   }
 };
 
@@ -145,7 +156,7 @@ export const bulkDeleteRecords = async (req: Request, res: Response): Promise<vo
     const { count } = await prisma.weatherRecord.deleteMany({ where: { id: { in: ids } } });
     res.json({ success: true, message: `${count} records deleted` });
   } catch (err) {
-    res.status(500).json({ success: false, error: (err as Error).message });
+    res.status(500).json({ success: false, error: dbError(err) });
   }
 };
 
@@ -154,6 +165,6 @@ export const deleteAllRecords = async (req: Request, res: Response): Promise<voi
     const { count } = await prisma.weatherRecord.deleteMany();
     res.json({ success: true, message: `All ${count} records deleted` });
   } catch (err) {
-    res.status(500).json({ success: false, error: (err as Error).message });
+    res.status(500).json({ success: false, error: dbError(err) });
   }
 };

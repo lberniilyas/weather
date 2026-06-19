@@ -79,12 +79,18 @@ export function ExportButtons() {
         csv:  'text/csv',
         markdown: 'text/markdown',
       };
-
       const extMap: Record<string, string> = { json: 'json', csv: 'csv', markdown: 'md' };
 
-      const resp = await apiClient.get(`/api/export/${format}`, { responseType: 'blob' });
+      // Fetch as text so the axios interceptor can still read JSON error responses.
+      // Then create the blob client-side from the received text.
+      const resp = await apiClient.get(`/api/export/${format}`, {
+        headers: { Accept: '*/*' },
+        transformResponse: [(data) => data], // keep raw string, skip JSON parse
+      });
+
+      const content: string = typeof resp.data === 'string' ? resp.data : JSON.stringify(resp.data, null, 2);
       downloadBlob(
-        new Blob([resp.data], { type: mimeMap[format] }),
+        new Blob([content], { type: mimeMap[format] }),
         `weather-records-${new Date().toISOString().split('T')[0]}.${extMap[format]}`
       );
     } catch (err) {
