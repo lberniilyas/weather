@@ -165,8 +165,8 @@ export function RecordList({ currentWeather }: Props) {
       )}
 
       {!loading && records.length > 0 && (
-        <div className="glass rounded-2xl overflow-hidden border border-white/10">
-          <table className="w-full text-sm" aria-label="Weather records">
+        <div className="glass rounded-2xl overflow-hidden border border-white/10 overflow-x-auto">
+          <table className="w-full text-sm min-w-[700px]" aria-label="Weather records">
             <thead>
               <tr className="border-b border-white/8">
                 <th className="p-4 text-left w-8">

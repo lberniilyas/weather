@@ -17,7 +17,13 @@ interface Props {
   location: string;
 }
 
+// Escape HTML to prevent XSS via location strings injected into Leaflet popups
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 export default function MapClient({ latitude, longitude, location }: Props) {
+  const safeLocation = escapeHtml(location);
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
 
@@ -38,7 +44,7 @@ export default function MapClient({ latitude, longitude, location }: Props) {
 
     L.marker([latitude, longitude])
       .addTo(map)
-      .bindPopup(`<strong>${location}</strong><br/>${latitude.toFixed(4)}, ${longitude.toFixed(4)}`)
+      .bindPopup(`<strong>${safeLocation}</strong><br/>${latitude.toFixed(4)}, ${longitude.toFixed(4)}`)
       .openPopup();
 
     mapRef.current = map;
@@ -63,7 +69,7 @@ export default function MapClient({ latitude, longitude, location }: Props) {
 
     L.marker([latitude, longitude])
       .addTo(map)
-      .bindPopup(`<strong>${location}</strong><br/>${latitude.toFixed(4)}, ${longitude.toFixed(4)}`)
+      .bindPopup(`<strong>${safeLocation}</strong><br/>${latitude.toFixed(4)}, ${longitude.toFixed(4)}`)
       .openPopup();
   }, [latitude, longitude, location]);
 
