@@ -32,6 +32,7 @@ function normalizeWeather(d: Record<string, any>): WeatherData {
     cloudCoverage: d.clouds?.all ?? 0,
     sunrise: d.sys?.sunrise ?? 0,
     sunset: d.sys?.sunset ?? 0,
+    timezone: d.timezone ?? 0,
     icon: d.weather[0].icon,
   };
 }

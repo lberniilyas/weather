@@ -21,8 +21,23 @@ function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
+function fmtUnix(unix: number | null | undefined, tz: number | null | undefined): string {
+  if (!unix) return '—';
+  const ms = unix * 1000 + (tz ?? 0) * 1000;
+  const d = new Date(ms);
+  return `${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}`;
+}
+
+function localTime(tz: number | null | undefined): string {
+  if (tz == null) return '—';
+  const d = new Date(Date.now() + tz * 1000);
+  const h = Math.floor(Math.abs(tz) / 3600);
+  const m = Math.floor((Math.abs(tz) % 3600) / 60);
+  const sign = tz >= 0 ? '+' : '-';
+  return `${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')} (UTC${sign}${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')})`;
+}
+
 async function generatePDF(records: WeatherRecord[]) {
-  // Dynamic import so jsPDF only loads when needed
   const jsPDFModule = await import('jspdf');
   const jsPDF = jsPDFModule.default;
   const autoTableModule = await import('jspdf-autotable');
@@ -33,27 +48,41 @@ async function generatePDF(records: WeatherRecord[]) {
 
   doc.setFontSize(20);
   doc.setTextColor(30, 64, 175);
-  doc.text('WeatherPro — Records Export', 14, 22);
+  doc.text('WeatherPro — Records Export', 14, 20);
   doc.setFontSize(10);
   doc.setTextColor(100, 116, 139);
-  doc.text(`Generated on ${date} · ${records.length} records total`, 14, 30);
+  doc.text(`Generated on ${date} · ${records.length} records`, 14, 28);
 
   autoTable(doc, {
-    startY: 36,
-    head: [['Location', 'Start Date', 'End Date', 'Temp (°C)', 'Humidity (%)', 'Condition', 'Notes']],
+    startY: 34,
+    head: [[
+      'Location', 'Local Time', 'Start', 'End',
+      'Temp', 'Feels Like', 'Humidity', 'Wind',
+      'Pressure', 'Visibility', 'Cloud', 'Sunrise', 'Sunset',
+      'Condition', 'Notes',
+    ]],
     body: records.map((r) => [
       r.location,
-      new Date(r.startDate).toLocaleDateString(),
-      new Date(r.endDate).toLocaleDateString(),
-      Math.round(r.temperature).toString(),
-      r.humidity.toString(),
+      localTime(r.timezone),
+      new Date(r.startDate).toLocaleDateString('en-GB'),
+      new Date(r.endDate).toLocaleDateString('en-GB'),
+      `${Math.round(r.temperature)}°C`,
+      r.feelsLike != null ? `${Math.round(r.feelsLike)}°C` : '—',
+      `${r.humidity}%`,
+      r.windSpeed != null ? `${r.windSpeed} m/s` : '—',
+      r.pressure != null ? `${r.pressure} hPa` : '—',
+      r.visibility != null ? `${(r.visibility / 1000).toFixed(1)} km` : '—',
+      r.cloudCoverage != null ? `${r.cloudCoverage}%` : '—',
+      fmtUnix(r.sunrise, r.timezone),
+      fmtUnix(r.sunset, r.timezone),
       r.condition,
       r.notes ?? '',
     ]),
-    headStyles: { fillColor: [30, 64, 175], textColor: 255, fontSize: 9, fontStyle: 'bold' },
-    bodyStyles: { fontSize: 8.5, textColor: [30, 41, 59] },
+    headStyles: { fillColor: [30, 64, 175], textColor: 255, fontSize: 7, fontStyle: 'bold' },
+    bodyStyles: { fontSize: 7, textColor: [30, 41, 59] },
     alternateRowStyles: { fillColor: [241, 245, 249] },
-    margin: { left: 14, right: 14 },
+    margin: { left: 10, right: 10 },
+    columnStyles: { 0: { cellWidth: 28 }, 1: { cellWidth: 28 }, 14: { cellWidth: 28 } },
   });
 
   doc.save(`weather-records-${new Date().toISOString().split('T')[0]}.pdf`);

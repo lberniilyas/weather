@@ -3,23 +3,32 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model WeatherRecord {
-  id          String   @id @default(cuid())
-  location    String
-  latitude    Float
-  longitude   Float
-  startDate   DateTime
-  endDate     DateTime
-  temperature Float
-  humidity    Float
-  condition   String
-  notes       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  location      String
+  latitude      Float
+  longitude     Float
+  startDate     DateTime
+  endDate       DateTime
+  temperature   Float
+  feelsLike     Float?
+  humidity      Float
+  windSpeed     Float?
+  pressure      Float?
+  visibility    Float?
+  cloudCoverage Float?
+  sunrise       Int?
+  sunset        Int?
+  timezone      Int?
+  condition     String
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@map("weather_records")
 }

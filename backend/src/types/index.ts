@@ -37,6 +37,7 @@ export interface WeatherData {
   cloudCoverage: number;
   sunrise: number;
   sunset: number;
+  timezone: number;
   icon: string;
 }
 

@@ -14,6 +14,7 @@ export interface WeatherData {
   cloudCoverage: number;
   sunrise: number;
   sunset: number;
+  timezone: number;
   icon: string;
 }
 
@@ -36,9 +37,17 @@ export interface WeatherRecord {
   startDate: string;
   endDate: string;
   temperature: number;
+  feelsLike?: number | null;
   humidity: number;
+  windSpeed?: number | null;
+  pressure?: number | null;
+  visibility?: number | null;
+  cloudCoverage?: number | null;
+  sunrise?: number | null;
+  sunset?: number | null;
+  timezone?: number | null;
   condition: string;
-  notes?: string;
+  notes?: string | null;
   createdAt: string;
   updatedAt: string;
 }

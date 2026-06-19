@@ -4,11 +4,22 @@ import type { WeatherData } from '@/types';
 
 interface Props { data: WeatherData }
 
+function getLocalTime(timezone: number): { time: string; date: string; offset: string } {
+  const nowUtcMs = Date.now();
+  const localMs = nowUtcMs + timezone * 1000;
+  const d = new Date(localMs);
+  const time = d.toLocaleTimeString('en-US', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit' });
+  const date = d.toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  const h = Math.floor(Math.abs(timezone) / 3600);
+  const m = Math.floor((Math.abs(timezone) % 3600) / 60);
+  const sign = timezone >= 0 ? '+' : '-';
+  const offset = `UTC${sign}${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  return { time, date, offset };
+}
+
 export function WeatherCard({ data }: Props) {
   const iconUrl = `https://openweathermap.org/img/wn/${data.icon}@4x.png`;
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-  const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const { time: timeStr, date: dateStr, offset } = getLocalTime(data.timezone);
 
   return (
     <div
@@ -28,7 +39,8 @@ export function WeatherCard({ data }: Props) {
           </svg>
           <span>{data.location}{data.country ? `, ${data.country}` : ''}</span>
         </div>
-        <p className="text-blue-100 text-xs">{dateStr} · {timeStr}</p>
+        <p className="text-blue-100 text-xs">{dateStr}</p>
+        <p className="text-blue-200 text-xs font-medium mt-0.5">🕐 {timeStr} <span className="text-blue-300/70">({offset})</span></p>
       </div>
 
       {/* Main temp + icon */}
