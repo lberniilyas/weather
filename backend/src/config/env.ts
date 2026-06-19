@@ -1,7 +1,5 @@
-import dotenv from 'dotenv';
-
-dotenv.config();
-
+// dotenv.config() is called once in index.ts before this module is imported.
+// Do not call it here — doing so would also load .env in test environments.
 export const config = {
   port: Number(process.env.PORT) || 5000,
   nodeEnv: process.env.NODE_ENV || 'development',

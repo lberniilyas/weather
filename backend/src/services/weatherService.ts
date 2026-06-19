@@ -2,6 +2,7 @@ import axios from 'axios';
 import config from '../config/env';
 import { detectQueryType, parseCoordinates } from '../utils/helpers';
 import type { WeatherData, ForecastDay } from '../types';
+import { cache, TTL } from './cacheService';
 
 const BASE = 'https://api.openweathermap.org/data/2.5';
 const KEY = () => config.openWeatherApiKey;
@@ -38,6 +39,10 @@ function normalizeWeather(d: Record<string, any>): WeatherData {
 }
 
 export async function getCurrentWeather(query: string): Promise<WeatherData> {
+  const cacheKey = `weather:current:${query.toLowerCase().trim()}`;
+  const hit = cache.get<WeatherData>(cacheKey);
+  if (hit) return hit;
+
   const type = detectQueryType(query);
   let params: Record<string, string | number>;
 
@@ -56,25 +61,38 @@ export async function getCurrentWeather(query: string): Promise<WeatherData> {
       params: { ...params, appid: KEY(), units: 'metric' },
       timeout: 45000,
     });
-    return normalizeWeather(data);
+    const result = normalizeWeather(data);
+    cache.set(cacheKey, result, TTL.WEATHER);
+    return result;
   } catch (err) {
     owmError(err);
   }
 }
 
 export async function getWeatherByCoords(lat: number, lon: number): Promise<WeatherData> {
+  // Round to 2 decimal places so nearby coord variations share a cache entry
+  const cacheKey = `weather:coords:${lat.toFixed(2)}:${lon.toFixed(2)}`;
+  const hit = cache.get<WeatherData>(cacheKey);
+  if (hit) return hit;
+
   try {
     const { data } = await axios.get(`${BASE}/weather`, {
       params: { lat, lon, appid: KEY(), units: 'metric' },
       timeout: 45000,
     });
-    return normalizeWeather(data);
+    const result = normalizeWeather(data);
+    cache.set(cacheKey, result, TTL.WEATHER);
+    return result;
   } catch (err) {
     owmError(err);
   }
 }
 
 export async function get5DayForecast(query: string): Promise<ForecastDay[]> {
+  const cacheKey = `weather:forecast:${query.toLowerCase().trim()}`;
+  const hit = cache.get<ForecastDay[]>(cacheKey);
+  if (hit) return hit;
+
   const type = detectQueryType(query);
   let params: Record<string, string | number>;
 
@@ -94,7 +112,6 @@ export async function get5DayForecast(query: string): Promise<ForecastDay[]> {
       timeout: 45000,
     });
 
-    // Group 3-hour slots by calendar date
     const byDay = new Map<string, Record<string, any>[]>();
     for (const item of data.list) {
       const date = (item.dt_txt as string).split(' ')[0];
@@ -117,7 +134,10 @@ export async function get5DayForecast(query: string): Promise<ForecastDay[]> {
         icon: noon.weather[0].icon,
       });
     }
-    return result.slice(0, 5);
+
+    const forecast = result.slice(0, 5);
+    cache.set(cacheKey, forecast, TTL.FORECAST);
+    return forecast;
   } catch (err) {
     owmError(err);
   }

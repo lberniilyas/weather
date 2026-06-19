@@ -2,13 +2,14 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
 import rateLimit from 'express-rate-limit';
 import weatherRoutes from './routes/weatherRoutes';
 import recordRoutes from './routes/recordRoutes';
 import exportRoutes from './routes/exportRoutes';
 
-dotenv.config();
+// dotenv.config() is intentionally called only in index.ts (the real server entry point).
+// When app.ts is imported directly by tests, no .env is loaded, so API_KEY is undefined
+// and the auth middleware correctly operates in passthrough mode.
 
 const app = express();
 
