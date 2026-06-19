@@ -21,6 +21,13 @@ function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
+// jsPDF doesn't embed CJK/Arabic fonts by default — replace non-latin chars with '?' to avoid spaced rendering
+function safePdfStr(s: string): string {
+  return s.replace(/[^\x00-\x7F]/g, (c) => {
+    try { return c.normalize('NFD').replace(/[̀-ͯ]/g, ''); } catch { return '?'; }
+  }) || s;
+}
+
 function fmtUnix(unix: number | null | undefined, tz: number | null | undefined): string {
   if (!unix) return '—';
   const ms = unix * 1000 + (tz ?? 0) * 1000;
@@ -62,7 +69,7 @@ async function generatePDF(records: WeatherRecord[]) {
       'Condition', 'Notes',
     ]],
     body: records.map((r) => [
-      r.location,
+      safePdfStr(r.location),
       localTime(r.timezone),
       new Date(r.startDate).toLocaleDateString('en-GB'),
       new Date(r.endDate).toLocaleDateString('en-GB'),
