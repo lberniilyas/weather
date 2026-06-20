@@ -15,7 +15,6 @@ import apiClient from '@/lib/axios';
 import { getWeatherTheme } from '@/lib/weatherTheme';
 import type { WeatherData, ForecastDay, YouTubeVideo } from '@/types';
 
-const DEFAULT_BG = 'https://picsum.photos/seed/mountain-travel-landscape/1920/1080';
 
 export function WeatherApp() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -59,17 +58,14 @@ export function WeatherApp() {
     }
   }, []);
 
-  const bgImage = weather ? getWeatherTheme(weather.condition).bgImage : DEFAULT_BG;
-
   return (
     <>
-      {/* Full-page background — fixed so it covers header + footer + scroll */}
+      {/* Full-page background — static, never changes */}
       <div
-        className="fixed inset-0 -z-20 transition-all duration-1000"
-        style={{ backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+        className="fixed inset-0 -z-20"
+        style={{ backgroundImage: 'url(https://picsum.photos/seed/weatherpro-hero/1920/1080)', backgroundSize: 'cover', backgroundPosition: 'center' }}
         aria-hidden="true"
       />
-      {/* Dark veil over the photo so all glass/text elements stay readable */}
       <div className="fixed inset-0 -z-10 bg-[#0a0f1e]/80" aria-hidden="true" />
 
     <div className="min-h-screen">
