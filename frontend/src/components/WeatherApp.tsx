@@ -60,13 +60,14 @@ export function WeatherApp() {
 
   return (
     <>
-      {/* Full-page background — static, never changes */}
-      <div
-        className="fixed inset-0 -z-20"
-        style={{ backgroundImage: 'url(https://picsum.photos/seed/weatherpro-hero/1920/1080)', backgroundSize: 'cover', backgroundPosition: 'center' }}
-        aria-hidden="true"
-      />
-      <div className="fixed inset-0 -z-10 bg-[#0a0f1e]/80" aria-hidden="true" />
+      {/* Full-page background — static, slow Ken Burns zoom */}
+      <div className="fixed inset-0 -z-20 overflow-hidden" aria-hidden="true">
+        <div
+          className="absolute inset-[-6%] bg-cover bg-center animate-ken-burns"
+          style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=2560&q=90)' }}
+        />
+      </div>
+      <div className="fixed inset-0 -z-10 bg-[#0a0f1e]/75" aria-hidden="true" />
 
     <div className="min-h-screen">
       {/* ── Search hero ───────────────────────────────── */}
