@@ -12,6 +12,7 @@ import { RecordList } from '@/components/crud/RecordList';
 import { ExportButtons } from '@/components/export/ExportButtons';
 import { LoadingOverlay } from '@/components/ui/Loading';
 import apiClient from '@/lib/axios';
+import { getWeatherTheme } from '@/lib/weatherTheme';
 import type { WeatherData, ForecastDay, YouTubeVideo } from '@/types';
 
 export function WeatherApp() {
@@ -105,7 +106,15 @@ export function WeatherApp() {
 
       {/* ── Weather results ───────────────────────────── */}
       {weather && (
-        <div ref={resultsRef} className="max-w-7xl mx-auto px-4 py-10 space-y-10">
+        <div ref={resultsRef} className="relative max-w-7xl mx-auto px-4 py-10 space-y-10">
+          {/* Subtle condition-tinted glow at top of results */}
+          <div
+            className="pointer-events-none absolute -top-10 left-0 right-0 h-72 -z-10"
+            style={{
+              background: `radial-gradient(ellipse at 50% 0%, ${getWeatherTheme(weather.condition).pageAccent} 0%, transparent 70%)`,
+            }}
+            aria-hidden="true"
+          />
 
           {/* Current + details */}
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
