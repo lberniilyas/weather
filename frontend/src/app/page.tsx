@@ -5,7 +5,7 @@ import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
 export default function Page() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0f1e]">
+    <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 pt-20">
         <ErrorBoundary>

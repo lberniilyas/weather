@@ -15,6 +15,8 @@ import apiClient from '@/lib/axios';
 import { getWeatherTheme } from '@/lib/weatherTheme';
 import type { WeatherData, ForecastDay, YouTubeVideo } from '@/types';
 
+const DEFAULT_BG = 'https://source.unsplash.com/featured/1920x1080/?travel,landscape,mountains,nature';
+
 export function WeatherApp() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [forecast, setForecast] = useState<ForecastDay[]>([]);
@@ -57,7 +59,19 @@ export function WeatherApp() {
     }
   }, []);
 
+  const bgImage = weather ? getWeatherTheme(weather.condition).bgImage : DEFAULT_BG;
+
   return (
+    <>
+      {/* Full-page background — fixed so it covers header + footer + scroll */}
+      <div
+        className="fixed inset-0 -z-20 transition-all duration-1000"
+        style={{ backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+        aria-hidden="true"
+      />
+      {/* Dark veil over the photo so all glass/text elements stay readable */}
+      <div className="fixed inset-0 -z-10 bg-[#0a0f1e]/80" aria-hidden="true" />
+
     <div className="min-h-screen">
       {/* ── Search hero ───────────────────────────────── */}
       <section className={`relative overflow-hidden transition-all duration-500 ${weather ? 'py-8 border-b border-white/5' : 'py-32'}`}>
@@ -188,5 +202,6 @@ export function WeatherApp() {
         <ExportButtons />
       </section>
     </div>
+    </>
   );
 }
