@@ -25,7 +25,7 @@ apiClient.interceptors.response.use(
       return Promise.reject(new Error(message));
     }
     if (error.request) {
-      return Promise.reject(new Error('Network error — make sure the backend server is running on port 5000'));
+      return Promise.reject(new Error('Unable to reach the server. Please check your connection and try again.'));
     }
     return Promise.reject(error);
   }
