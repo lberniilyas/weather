@@ -4,22 +4,26 @@ export interface WeatherTheme {
   bgImage: string;
 }
 
-const UNS = 'https://images.unsplash.com/photo-';
-const OPT = '?auto=format&fit=crop&w=1920&q=85';
+const BASE = 'https://source.unsplash.com/featured/1920x1080/?';
 
 const BG: Record<string, string> = {
-  Clear:        `${UNS}1507525428034-b723cf961d3e${OPT}`, // tropical beach, golden sun
-  Rain:         `${UNS}1519692933481-e162a57d6721${OPT}`, // rain on city street
-  Drizzle:      `${UNS}1519692933481-e162a57d6721${OPT}`,
-  Thunderstorm: `${UNS}1472145246862-b24cf25495bf${OPT}`, // lightning over landscape
-  Snow:         `${UNS}1491002052546-bf38f186af56${OPT}`, // snowy mountain valley
-  Clouds:       `${UNS}1534374228664-75b5c9f0bbaa${OPT}`, // dramatic cloudscape
-  Fog:          `${UNS}1487621167305-5d248087c724${OPT}`, // misty forest
-  Mist:         `${UNS}1487621167305-5d248087c724${OPT}`,
-  Haze:         `${UNS}1487621167305-5d248087c724${OPT}`,
-  Smoke:        `${UNS}1487621167305-5d248087c724${OPT}`,
+  Clear:        `${BASE}sunny,beach,travel,blue-sky`,
+  Rain:         `${BASE}rain,rainy,city,travel`,
+  Drizzle:      `${BASE}drizzle,rain,street,city`,
+  Thunderstorm: `${BASE}thunderstorm,lightning,storm,dramatic`,
+  Snow:         `${BASE}snow,winter,mountain,landscape`,
+  Clouds:       `${BASE}clouds,overcast,landscape,travel`,
+  Fog:          `${BASE}fog,mist,forest,nature`,
+  Mist:         `${BASE}mist,fog,valley,morning`,
+  Haze:         `${BASE}haze,sunrise,golden,landscape`,
+  Smoke:        `${BASE}smoke,haze,atmospheric`,
+  Dust:         `${BASE}desert,dust,arid,landscape`,
+  Sand:         `${BASE}desert,sand,dunes,travel`,
+  Ash:          `${BASE}volcanic,dramatic,landscape`,
+  Squall:       `${BASE}storm,wind,dramatic,ocean`,
+  Tornado:      `${BASE}storm,dramatic,dark,sky`,
 };
-const DEFAULT_BG = `${UNS}1506905925346-21bda4d32df4${OPT}`; // mountain peaks, blue sky
+const DEFAULT_BG = `${BASE}travel,landscape,nature,scenery`;
 
 export function getWeatherTheme(condition: string): WeatherTheme {
   const bgImage = BG[condition] ?? DEFAULT_BG;
