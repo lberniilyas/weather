@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRecords } from '@/hooks/useRecords';
 import { RecordForm } from './RecordForm';
+import { RecordCharts } from '@/components/records/RecordCharts';
 import { LoadingOverlay } from '@/components/ui/Loading';
 import type { WeatherData, WeatherRecord } from '@/types';
 
@@ -28,8 +29,11 @@ const SORT_OPTIONS = [
   { value: 'startDate', label: 'Start Date' },
 ];
 
+type Tab = 'table' | 'trends';
+
 export function RecordList({ currentWeather }: Props) {
   const { records, pagination, loading, error, loadRecords, removeRecord, removeMany } = useRecords();
+  const [activeTab, setActiveTab] = useState<Tab>('table');
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
@@ -84,6 +88,34 @@ export function RecordList({ currentWeather }: Props) {
 
   return (
     <div className="flex flex-col gap-4">
+
+      {/* Tab bar */}
+      <div className="flex items-center gap-1 p-1 glass rounded-xl border border-white/10 self-start">
+        {(['table', 'trends'] as Tab[]).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all capitalize ${
+              activeTab === tab
+                ? 'bg-blue-500 text-white shadow-sm'
+                : 'text-slate-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            {tab === 'table' ? '📋 Table' : '📊 Trends'}
+          </button>
+        ))}
+      </div>
+
+      {/* Trends view */}
+      {activeTab === 'trends' && (
+        <div className="py-2">
+          <RecordCharts />
+        </div>
+      )}
+
+      {/* Table view */}
+      {activeTab === 'table' && <>
+
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
         <input
@@ -236,6 +268,8 @@ export function RecordList({ currentWeather }: Props) {
           </div>
         </div>
       )}
+
+      </> /* end table view */}
     </div>
   );
 }
