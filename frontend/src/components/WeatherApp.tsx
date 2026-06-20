@@ -15,7 +15,7 @@ import apiClient from '@/lib/axios';
 import { getWeatherTheme } from '@/lib/weatherTheme';
 import type { WeatherData, ForecastDay, YouTubeVideo } from '@/types';
 
-const DEFAULT_BG = 'https://source.unsplash.com/featured/1920x1080/?travel,landscape,mountains,nature';
+const DEFAULT_BG = 'https://picsum.photos/seed/mountain-travel-landscape/1920/1080';
 
 export function WeatherApp() {
   const [weather, setWeather] = useState<WeatherData | null>(null);

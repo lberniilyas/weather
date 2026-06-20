@@ -4,26 +4,27 @@ export interface WeatherTheme {
   bgImage: string;
 }
 
-const BASE = 'https://source.unsplash.com/featured/1920x1080/?';
+// picsum.photos: seed = same photo every time, always reliable, no API key
+const P = (seed: string) => `https://picsum.photos/seed/${seed}/1920/1080`;
 
 const BG: Record<string, string> = {
-  Clear:        `${BASE}sunny,beach,travel,blue-sky`,
-  Rain:         `${BASE}rain,rainy,city,travel`,
-  Drizzle:      `${BASE}drizzle,rain,street,city`,
-  Thunderstorm: `${BASE}thunderstorm,lightning,storm,dramatic`,
-  Snow:         `${BASE}snow,winter,mountain,landscape`,
-  Clouds:       `${BASE}clouds,overcast,landscape,travel`,
-  Fog:          `${BASE}fog,mist,forest,nature`,
-  Mist:         `${BASE}mist,fog,valley,morning`,
-  Haze:         `${BASE}haze,sunrise,golden,landscape`,
-  Smoke:        `${BASE}smoke,haze,atmospheric`,
-  Dust:         `${BASE}desert,dust,arid,landscape`,
-  Sand:         `${BASE}desert,sand,dunes,travel`,
-  Ash:          `${BASE}volcanic,dramatic,landscape`,
-  Squall:       `${BASE}storm,wind,dramatic,ocean`,
-  Tornado:      `${BASE}storm,dramatic,dark,sky`,
+  Clear:        P('tropical-beach-sun'),
+  Rain:         P('rainy-city-street'),
+  Drizzle:      P('drizzle-cobblestone'),
+  Thunderstorm: P('dramatic-storm-sky'),
+  Snow:         P('snowy-alpine-valley'),
+  Clouds:       P('overcast-mountain'),
+  Fog:          P('misty-forest-path'),
+  Mist:         P('misty-morning-lake'),
+  Haze:         P('golden-sunrise-haze'),
+  Smoke:        P('volcanic-haze-landscape'),
+  Dust:         P('sahara-desert-dunes'),
+  Sand:         P('sand-dunes-travel'),
+  Ash:          P('volcanic-dramatic'),
+  Squall:       P('ocean-storm-squall'),
+  Tornado:      P('dark-stormy-plains'),
 };
-const DEFAULT_BG = `${BASE}travel,landscape,nature,scenery`;
+const DEFAULT_BG = P('mountain-travel-landscape');
 
 export function getWeatherTheme(condition: string): WeatherTheme {
   const bgImage = BG[condition] ?? DEFAULT_BG;
