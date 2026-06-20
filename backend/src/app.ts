@@ -37,8 +37,37 @@ const exportLimiter = rateLimit({
   message: { success: false, error: 'Too many export requests. Please wait a moment.' },
 });
 
+const configuredOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const isAllowedOrigin = (origin?: string) => {
+  if (!origin) return true;
+  if (configuredOrigins.includes(origin)) return true;
+
+  try {
+    const url = new URL(origin);
+    return url.hostname === 'localhost' || url.hostname.endsWith('.vercel.app');
+  } catch {
+    return false;
+  }
+};
+
 app.use(helmet());
-app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:3000', credentials: true }));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (isAllowedOrigin(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
+  })
+);
 app.use(process.env.NODE_ENV === 'test' ? morgan('silent') : morgan('dev'));
 app.use(express.json({ limit: '50kb' }));
 app.use(express.urlencoded({ extended: true, limit: '50kb' }));

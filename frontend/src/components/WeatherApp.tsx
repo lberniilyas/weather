@@ -1,4 +1,5 @@
 'use client';
+import { Database, FileDown, MapPin, Video } from 'lucide-react';
 import { useState, useCallback, useRef } from 'react';
 import { SearchBar } from '@/components/weather/SearchBar';
 import { WeatherCard } from '@/components/weather/WeatherCard';
@@ -130,7 +131,10 @@ export function WeatherApp() {
           {/* Map + Videos */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <section aria-labelledby="map-heading">
-              <h2 id="map-heading" className="text-white font-semibold text-xl mb-4">📍 Location Map</h2>
+              <h2 id="map-heading" className="text-white font-semibold text-xl mb-4 flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-sky-300" aria-hidden="true" />
+                <span>Location Map</span>
+              </h2>
               <WeatherMap
                 latitude={weather.latitude}
                 longitude={weather.longitude}
@@ -139,7 +143,10 @@ export function WeatherApp() {
             </section>
 
             <section aria-labelledby="videos-heading">
-              <h2 id="videos-heading" className="text-white font-semibold text-xl mb-4">🎥 Travel Videos · {weather.location}</h2>
+              <h2 id="videos-heading" className="text-white font-semibold text-xl mb-4 flex items-center gap-2">
+                <Video className="h-5 w-5 text-sky-300" aria-hidden="true" />
+                <span>Travel Videos · {weather.location}</span>
+              </h2>
               {videosLoading ? (
                 <LoadingOverlay message="Loading videos…" />
               ) : (
@@ -153,7 +160,10 @@ export function WeatherApp() {
       {/* ── Records ──────────────────────────────────── */}
       <section className="border-t border-white/5 max-w-7xl mx-auto px-4 py-16" id="records" aria-labelledby="records-heading">
         <div className="mb-8">
-          <h2 id="records-heading" className="text-white text-2xl font-bold">💾 Weather Records</h2>
+          <h2 id="records-heading" className="text-white text-2xl font-bold flex items-center gap-2">
+            <Database className="h-6 w-6 text-sky-300" aria-hidden="true" />
+            <span>Weather Records</span>
+          </h2>
           <p className="text-slate-400 text-sm mt-1">Save, search, sort and export your personal weather history</p>
         </div>
         <RecordList currentWeather={weather} />
@@ -161,7 +171,10 @@ export function WeatherApp() {
 
       {/* ── Export ───────────────────────────────────── */}
       <section className="border-t border-white/5 max-w-7xl mx-auto px-4 py-16" id="export" aria-labelledby="export-heading">
-        <h2 id="export-heading" className="text-white text-2xl font-bold mb-2">📤 Export Data</h2>
+        <h2 id="export-heading" className="text-white text-2xl font-bold mb-2 flex items-center gap-2">
+          <FileDown className="h-6 w-6 text-sky-300" aria-hidden="true" />
+          <span>Export Data</span>
+        </h2>
         <p className="text-slate-400 text-sm mb-8">Download all saved weather records in your preferred format</p>
         <ExportButtons />
       </section>

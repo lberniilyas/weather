@@ -1,4 +1,5 @@
 'use client';
+import { TriangleAlert } from 'lucide-react';
 import { Component, type ReactNode } from 'react';
 
 interface Props { children: ReactNode; fallback?: ReactNode }
@@ -19,7 +20,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return this.props.fallback ?? (
         <div className="flex flex-col items-center justify-center py-20 gap-4 text-center px-4">
-          <p className="text-4xl">⚠️</p>
+          <TriangleAlert className="h-10 w-10 text-amber-400" aria-hidden="true" />
           <p className="text-white font-semibold text-lg">Something went wrong</p>
           <p className="text-slate-400 text-sm max-w-md">{this.state.message}</p>
           <button

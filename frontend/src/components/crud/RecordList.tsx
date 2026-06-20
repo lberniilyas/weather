@@ -1,4 +1,5 @@
 'use client';
+import { ArrowUpDown, Archive, ChartColumn, Plus, Table2 } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import { useRecords } from '@/hooks/useRecords';
 import { RecordForm } from './RecordForm';
@@ -95,13 +96,14 @@ export function RecordList({ currentWeather }: Props) {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all capitalize ${
+            className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium transition-all capitalize ${
               activeTab === tab
                 ? 'bg-blue-500 text-white shadow-sm'
                 : 'text-slate-400 hover:text-white hover:bg-white/5'
             }`}
           >
-            {tab === 'table' ? '📋 Table' : '📊 Trends'}
+            {tab === 'table' ? <Table2 className="h-4 w-4" aria-hidden="true" /> : <ChartColumn className="h-4 w-4" aria-hidden="true" />}
+            <span>{tab === 'table' ? 'Table' : 'Trends'}</span>
           </button>
         ))}
       </div>
@@ -135,16 +137,18 @@ export function RecordList({ currentWeather }: Props) {
         </select>
         <button
           onClick={() => setSortOrder((o) => o === 'asc' ? 'desc' : 'asc')}
-          className="px-3 py-2.5 glass border border-white/10 rounded-xl text-white text-sm hover:bg-white/10 transition-all"
+          className="px-3 py-2.5 glass border border-white/10 rounded-xl text-white text-sm hover:bg-white/10 transition-all inline-flex items-center"
           aria-label="Toggle sort direction"
         >
-          {sortOrder === 'asc' ? '↑ Asc' : '↓ Desc'}
+          <ArrowUpDown className="h-4 w-4 mr-1.5" aria-hidden="true" />
+          {sortOrder === 'asc' ? 'Asc' : 'Desc'}
         </button>
         <button
           onClick={() => { setEditRecord(null); setShowForm(true); }}
-          className="px-5 py-2.5 bg-blue-500 hover:bg-blue-400 text-white font-semibold rounded-xl text-sm transition-colors shadow-lg shadow-blue-500/20 whitespace-nowrap"
+          className="px-5 py-2.5 bg-blue-500 hover:bg-blue-400 text-white font-semibold rounded-xl text-sm transition-colors shadow-lg shadow-blue-500/20 whitespace-nowrap inline-flex items-center"
         >
-          + Add Record
+          <Plus className="h-4 w-4 mr-1.5" aria-hidden="true" />
+          Add Record
         </button>
       </div>
 
@@ -191,7 +195,7 @@ export function RecordList({ currentWeather }: Props) {
 
       {!loading && records.length === 0 && (
         <div className="text-center py-16 text-slate-500">
-          <p className="text-4xl mb-3">🗂️</p>
+          <Archive className="mx-auto h-10 w-10 mb-3" aria-hidden="true" />
           <p className="text-sm">No records yet. Search for a location and click "Add Record".</p>
         </div>
       )}

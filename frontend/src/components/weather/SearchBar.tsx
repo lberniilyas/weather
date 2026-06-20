@@ -1,4 +1,5 @@
 'use client';
+import { MapPin } from 'lucide-react';
 import { useState, useCallback, useRef } from 'react';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import apiClient from '@/lib/axios';
@@ -111,7 +112,7 @@ export function SearchBar({ onSearch, loading }: SearchBarProps) {
                     onMouseDown={() => pickSuggestion(s)}
                     className="w-full text-left px-4 py-3 text-sm text-slate-300 hover:bg-white/8 hover:text-white flex items-start gap-3 transition-colors border-b border-white/5 last:border-0"
                   >
-                    <span className="text-blue-400 mt-0.5 shrink-0">📍</span>
+                    <MapPin className="h-4 w-4 text-blue-400 mt-0.5 shrink-0" aria-hidden="true" />
                     <span className="truncate">{s.displayName}</span>
                   </button>
                 </li>

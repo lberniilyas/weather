@@ -1,3 +1,5 @@
+import { CloudSun } from 'lucide-react';
+
 const FOOTER_LINKS = {
   Product: ['Weather Search', 'Forecast', 'Interactive Map', 'Travel Videos', 'AI Recommendations'],
   Data: ['Save Records', 'Export JSON', 'Export CSV', 'Export PDF', 'Export Markdown'],
@@ -16,7 +18,7 @@ export function Footer() {
           <div className="md:col-span-1">
             <div className="flex items-center gap-2.5 mb-4">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center text-sm shadow-lg shadow-blue-500/30">
-                🌤️
+                <CloudSun className="h-4.5 w-4.5 text-white" aria-hidden="true" />
               </div>
               <span className="text-white font-bold text-lg tracking-tight">
                 Weather<span className="text-blue-400">Pro</span>

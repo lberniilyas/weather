@@ -1,4 +1,5 @@
 'use client';
+import { CloudSun, FileDown, Search } from 'lucide-react';
 import { useState } from 'react';
 
 const NAV = [
@@ -27,7 +28,7 @@ export function Header() {
           {/* Logo */}
           <a href="/" className="flex items-center gap-2.5 group" aria-label="WeatherPro home">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center text-base shadow-lg shadow-blue-500/30">
-              🌤️
+              <CloudSun className="h-4.5 w-4.5 text-white" aria-hidden="true" />
             </div>
             <span className="text-white font-bold text-lg tracking-tight">
               Weather<span className="text-blue-400">Pro</span>
@@ -50,9 +51,11 @@ export function Header() {
           {/* Actions */}
           <div className="hidden md:flex items-center gap-3">
             <button className="text-sm text-slate-400 hover:text-white px-4 py-2 rounded-lg hover:bg-white/5 transition-all font-medium">
+              <FileDown className="inline-block h-4 w-4 mr-1.5 align-[-2px]" aria-hidden="true" />
               Export data
             </button>
             <button className="text-sm font-semibold bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg transition-colors shadow-md shadow-blue-500/20">
+              <Search className="inline-block h-4 w-4 mr-1.5 align-[-2px]" aria-hidden="true" />
               Search weather
             </button>
           </div>
@@ -95,9 +98,11 @@ export function Header() {
               </a>
             ))}
             <div className="border-t border-white/5 mt-2 pt-2 flex flex-col gap-2">
+                  <FileDown className="inline-block h-4 w-4 mr-2 align-[-2px]" aria-hidden="true" />
               <button className="text-sm text-slate-400 hover:text-white px-4 py-3 rounded-xl hover:bg-white/5 transition-all text-left font-medium">
                 Export data
               </button>
+                  <Search className="inline-block h-4 w-4 mr-2 align-[-2px]" aria-hidden="true" />
               <button className="text-sm font-semibold bg-blue-500 hover:bg-blue-400 text-white px-4 py-3 rounded-xl transition-colors text-left">
                 Search weather
               </button>
