@@ -7,7 +7,6 @@ export const config = {
   openWeatherApiKey: process.env.OPENWEATHER_API_KEY || '',
   youtubeApiKey: process.env.YOUTUBE_API_KEY || '',
   databaseUrl: process.env.DATABASE_URL || '',
-  anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
 } as const;
 
 export default config;
