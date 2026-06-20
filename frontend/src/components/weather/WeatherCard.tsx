@@ -27,11 +27,14 @@ export function WeatherCard({ data }: Props) {
   return (
     <div
       className="relative overflow-hidden rounded-2xl p-6 h-full flex flex-col justify-between min-h-[280px]"
-      style={{ background: theme.cardGradient }}
+      style={{
+        backgroundImage: `url(${theme.bgImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
     >
-      {/* Decorative circle */}
-      <div className="pointer-events-none absolute -top-16 -right-16 w-56 h-56 rounded-full bg-white/5" aria-hidden="true" />
-      <div className="pointer-events-none absolute -bottom-10 -left-10 w-40 h-40 rounded-full bg-white/5" aria-hidden="true" />
+      {/* Condition-tinted overlay — keeps text readable while the photo shows through */}
+      <div className="absolute inset-0" style={{ background: theme.cardGradient, opacity: 0.82 }} aria-hidden="true" />
 
       {/* Location */}
       <div className="relative z-10">
