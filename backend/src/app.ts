@@ -49,7 +49,6 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/api/weather', weatherLimiter, weatherRoutes);
-app.use('/api/youtube', weatherLimiter, weatherRoutes);
 app.use('/api/records', recordRoutes);
 app.use('/api/export', exportLimiter, exportRoutes);
 
