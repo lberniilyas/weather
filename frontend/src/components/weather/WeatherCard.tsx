@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { getWeatherTheme, getTempColor } from '@/lib/weatherTheme';
-import type { WeatherData } from '@/types';
+import type { WeatherData, ForecastDay } from '@/types';
 
 function getLocalTime(timezone: number): { time: string; date: string; offset: string } {
   const nowUtcMs = Date.now();
@@ -35,9 +35,13 @@ async function fetchCityPhoto(city: string, country?: string): Promise<string | 
   return null;
 }
 
-interface Props { data: WeatherData }
+interface Props {
+  data: WeatherData;
+  forecastDay?: ForecastDay | null;
+  onClearForecast?: () => void;
+}
 
-export function WeatherCard({ data }: Props) {
+export function WeatherCard({ data, forecastDay, onClearForecast }: Props) {
   const iconUrl = `https://openweathermap.org/img/wn/${data.icon}@4x.png`;
   const { time: timeStr, date: dateStr, offset } = getLocalTime(data.timezone);
   const theme = getWeatherTheme(data.condition);
@@ -50,6 +54,24 @@ export function WeatherCard({ data }: Props) {
     fetchCityPhoto(data.location, data.country).then(setCityPhoto);
   }, [data.location, data.country]);
 
+  const forecastDateLabel = forecastDay
+    ? new Date(forecastDay.date + 'T12:00:00').toLocaleDateString('en-US', {
+        weekday: 'long', month: 'long', day: 'numeric',
+      })
+    : null;
+
+  const stats = forecastDay
+    ? [
+        { label: 'Low',      value: `${forecastDay.minTemp}°C` },
+        { label: 'Humidity', value: `${data.humidity}%` },
+        { label: 'High',     value: `${forecastDay.maxTemp}°C` },
+      ]
+    : [
+        { label: 'Feels like', value: `${Math.round(data.feelsLike)}°C` },
+        { label: 'Humidity',   value: `${data.humidity}%` },
+        { label: 'Wind',       value: `${data.windSpeed} m/s` },
+      ];
+
   return (
     <div className="relative overflow-hidden rounded-2xl h-full flex flex-col justify-between min-h-[280px]">
       {/* City photo background */}
@@ -61,12 +83,12 @@ export function WeatherCard({ data }: Props) {
         />
       )}
 
-      {/* Gradient overlay: full card tint when no photo, bottom-heavy when photo is present */}
+      {/* Gradient overlay */}
       <div
         className="absolute inset-0"
         style={{
           background: cityPhoto
-            ? `linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.45) 55%, rgba(0,0,0,0.15) 100%)`
+            ? 'linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.45) 55%, rgba(0,0,0,0.15) 100%)'
             : theme.cardGradient,
         }}
         aria-hidden="true"
@@ -74,17 +96,38 @@ export function WeatherCard({ data }: Props) {
 
       {/* Content */}
       <div className="relative z-10 p-6 flex flex-col justify-between h-full">
-        {/* Location */}
+
+        {/* Location + forecast badge */}
         <div>
-          <div className="flex items-center gap-1.5 text-white/70 text-sm mb-1">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <span>{data.location}{data.country ? `, ${data.country}` : ''}</span>
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-center gap-1.5 text-white/70 text-sm mb-1">
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span>{data.location}{data.country ? `, ${data.country}` : ''}</span>
+            </div>
+            {forecastDay && (
+              <button
+                onClick={onClearForecast}
+                className="shrink-0 text-xs text-blue-300 hover:text-white bg-blue-500/20 hover:bg-blue-500/40 px-2 py-1 rounded-lg transition-all"
+                aria-label="Back to current weather"
+              >
+                ← Now
+              </button>
+            )}
           </div>
-          <p className="text-white/80 text-xs">{dateStr}</p>
-          <p className="text-white/70 text-xs font-medium mt-0.5">🕐 {timeStr} <span className="text-white/50">({offset})</span></p>
+
+          {forecastDay ? (
+            <p className="text-white/80 text-xs">📅 {forecastDateLabel}</p>
+          ) : (
+            <>
+              <p className="text-white/80 text-xs">{dateStr}</p>
+              <p className="text-white/70 text-xs font-medium mt-0.5">
+                🕐 {timeStr} <span className="text-white/50">({offset})</span>
+              </p>
+            </>
+          )}
         </div>
 
         {/* Main temp + icon */}
@@ -106,13 +149,9 @@ export function WeatherCard({ data }: Props) {
           />
         </div>
 
-        {/* Quick stats */}
+        {/* Stats */}
         <div className="grid grid-cols-3 gap-3 mt-4">
-          {[
-            { label: 'Feels like', value: `${Math.round(data.feelsLike)}°C` },
-            { label: 'Humidity', value: `${data.humidity}%` },
-            { label: 'Wind', value: `${data.windSpeed} m/s` },
-          ].map(({ label, value }) => (
+          {stats.map(({ label, value }) => (
             <div key={label} className="bg-white/10 backdrop-blur-sm rounded-xl px-3 py-2 text-center">
               <p className="text-white font-semibold text-sm">{value}</p>
               <p className="text-white/60 text-xs mt-0.5">{label}</p>

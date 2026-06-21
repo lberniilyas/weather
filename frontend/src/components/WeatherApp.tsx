@@ -19,6 +19,7 @@ import type { WeatherData, ForecastDay, YouTubeVideo } from '@/types';
 export function WeatherApp() {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [forecast, setForecast] = useState<ForecastDay[]>([]);
+  const [selectedDay, setSelectedDay] = useState<ForecastDay | null>(null);
   const [videos, setVideos] = useState<YouTubeVideo[]>([]);
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [videosLoading, setVideosLoading] = useState(false);
@@ -29,6 +30,7 @@ export function WeatherApp() {
     setWeatherLoading(true);
     setWeatherError(null);
     setVideos([]);
+    setSelectedDay(null);
 
     try {
       const [weatherRes, forecastRes] = await Promise.all([
@@ -128,20 +130,41 @@ export function WeatherApp() {
           />
 
           {/* Current + details */}
+          {(() => {
+            const displayData: WeatherData = selectedDay ? {
+              ...weather,
+              temperature:  selectedDay.temperature,
+              humidity:     selectedDay.humidity,
+              windSpeed:    selectedDay.windSpeed,
+              condition:    selectedDay.condition,
+              description:  selectedDay.condition,
+              icon:         selectedDay.icon,
+            } : weather;
+            return (
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             <div className="lg:col-span-2">
-              <WeatherCard data={weather} />
+              <WeatherCard
+                data={displayData}
+                forecastDay={selectedDay}
+                onClearForecast={() => setSelectedDay(null)}
+              />
             </div>
             <div className="lg:col-span-3">
               <WeatherDetails data={weather} />
             </div>
           </div>
+            );
+          })()}
 
           {/* Forecast */}
           {forecast.length > 0 && (
             <section aria-labelledby="forecast-heading">
               <h2 id="forecast-heading" className="text-white font-semibold text-xl mb-5">5-Day Forecast</h2>
-              <ForecastGrid days={forecast} />
+              <ForecastGrid
+                days={forecast}
+                selectedDate={selectedDay?.date ?? null}
+                onSelectDay={setSelectedDay}
+              />
             </section>
           )}
 
