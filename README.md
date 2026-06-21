@@ -293,7 +293,7 @@ All external dependencies (Prisma, OpenWeatherMap, Nominatim, YouTube) are mocke
 - **Rate limiting** — global cap (200/15 min) + per-route caps on weather and export routes
 - **Request size limit** — `express.json({ limit: '50kb' })` prevents body-size DoS
 - **XSS prevention** — location strings HTML-escaped before injection into Leaflet popups
-- **No secrets in client bundle** — all API keys are backend-only; `NEXT_PUBLIC_API_URL` is the only frontend env variable
+- **No secrets in client bundle** — all third-party API keys are backend-only; only `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_API_KEY` are exposed to the frontend, and neither grants access to any external service
 - **`.env` never committed** — gitignored at both root and package level
 - **`npm audit`** — 0 backend vulnerabilities, 2 moderate frontend (PostCSS via Next.js internals, no fix available without downgrading Next)
 
