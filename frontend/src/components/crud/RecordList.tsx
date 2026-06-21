@@ -23,6 +23,13 @@ function ConfirmModal({ onConfirm, onCancel, message }: { onConfirm: () => void;
   );
 }
 
+function pageWindow(current: number, total: number): number[] {
+  if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
+  if (current <= 3) return [1, 2, 3, 4, 5];
+  if (current >= total - 2) return [total - 4, total - 3, total - 2, total - 1, total];
+  return [current - 2, current - 1, current, current + 1, current + 2];
+}
+
 const SORT_OPTIONS = [
   { value: 'createdAt', label: 'Date Added' },
   { value: 'location', label: 'Location' },
@@ -44,6 +51,8 @@ export function RecordList({ currentWeather }: Props) {
   const [editRecord, setEditRecord] = useState<WeatherRecord | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | 'bulk' | null>(null);
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [trendsKey, setTrendsKey] = useState(0);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 350);
@@ -68,15 +77,28 @@ export function RecordList({ currentWeather }: Props) {
   };
 
   const handleDelete = async (id: string) => {
-    await removeRecord(id);
-    setDeleteTarget(null);
+    try {
+      await removeRecord(id);
+      if (records.length === 1 && page > 1) setPage((p) => p - 1);
+      else reload();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Failed to delete record');
+    } finally {
+      setDeleteTarget(null);
+    }
   };
 
   const handleBulkDelete = async () => {
-    await removeMany([...selected]);
-    setSelected(new Set());
-    setDeleteTarget(null);
-    reload();
+    try {
+      await removeMany([...selected]);
+      setSelected(new Set());
+      if (selected.size >= records.length && page > 1) setPage((p) => p - 1);
+      else reload();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Failed to delete records');
+    } finally {
+      setDeleteTarget(null);
+    }
   };
 
   const handleFormSuccess = () => {
@@ -95,7 +117,7 @@ export function RecordList({ currentWeather }: Props) {
         {(['table', 'trends'] as Tab[]).map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => { if (tab === 'trends') setTrendsKey((k) => k + 1); setActiveTab(tab); }}
             className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-medium transition-all capitalize ${
               activeTab === tab
                 ? 'bg-blue-500 text-white shadow-sm'
@@ -111,7 +133,7 @@ export function RecordList({ currentWeather }: Props) {
       {/* Trends view */}
       {activeTab === 'trends' && (
         <div className="py-2">
-          <RecordCharts />
+          <RecordCharts key={trendsKey} />
         </div>
       )}
 
@@ -192,6 +214,12 @@ export function RecordList({ currentWeather }: Props) {
       {/* Content */}
       {loading && <LoadingOverlay message="Loading records…" />}
       {error && <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm" role="alert">{error}</div>}
+      {actionError && (
+        <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center justify-between" role="alert">
+          <span>{actionError}</span>
+          <button onClick={() => setActionError(null)} className="ml-4 text-red-400/60 hover:text-red-400 transition-colors shrink-0">✕</button>
+        </div>
+      )}
 
       {!loading && records.length === 0 && (
         <div className="text-center py-16 text-slate-500">
@@ -257,7 +285,7 @@ export function RecordList({ currentWeather }: Props) {
               disabled={page === 1}
               className="px-3 py-1.5 glass border border-white/10 rounded-lg disabled:opacity-30 hover:bg-white/10 transition-all text-white"
             >←</button>
-            {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => i + 1).map((p) => (
+            {pageWindow(page, pagination.totalPages).map((p) => (
               <button
                 key={p}
                 onClick={() => setPage(p)}

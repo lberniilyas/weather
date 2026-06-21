@@ -119,9 +119,24 @@ export const updateRecord = async (req: Request, res: Response): Promise<void> =
         res.status(400).json({ success: false, error: `Location "${location}" not found.` });
         return;
       }
-      const { latitude, longitude, name } = geoResults[0];
+      const { latitude, longitude } = geoResults[0];
       const weather = await getWeatherByCoords(latitude, longitude);
-      updateData = { location: location.trim(), latitude, longitude, temperature: weather.temperature, humidity: weather.humidity, condition: weather.condition };
+      updateData = {
+        location:      location.trim(),
+        latitude,
+        longitude,
+        temperature:   weather.temperature,
+        feelsLike:     weather.feelsLike,
+        humidity:      weather.humidity,
+        windSpeed:     weather.windSpeed,
+        pressure:      weather.pressure,
+        visibility:    weather.visibility,
+        cloudCoverage: weather.cloudCoverage,
+        sunrise:       weather.sunrise,
+        sunset:        weather.sunset,
+        timezone:      weather.timezone,
+        condition:     weather.condition,
+      };
     }
 
     if (startDate) updateData.startDate = new Date(startDate);
