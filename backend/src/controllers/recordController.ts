@@ -75,7 +75,7 @@ export const createRecord = async (req: Request, res: Response): Promise<void> =
 
     const record = await prisma.weatherRecord.create({
       data: {
-        location: weather.location || name,
+        location: location.trim(),
         latitude,
         longitude,
         startDate: new Date(startDate),
@@ -121,7 +121,7 @@ export const updateRecord = async (req: Request, res: Response): Promise<void> =
       }
       const { latitude, longitude, name } = geoResults[0];
       const weather = await getWeatherByCoords(latitude, longitude);
-      updateData = { location: weather.location || name, latitude, longitude, temperature: weather.temperature, humidity: weather.humidity, condition: weather.condition };
+      updateData = { location: location.trim(), latitude, longitude, temperature: weather.temperature, humidity: weather.humidity, condition: weather.condition };
     }
 
     if (startDate) updateData.startDate = new Date(startDate);
