@@ -229,14 +229,17 @@ DIRECT_URL="postgresql://USER:PASSWORD@HOST:5432/postgres"
 OPENWEATHER_API_KEY=your_key_here
 YOUTUBE_API_KEY=your_key_here
 CORS_ORIGIN=http://localhost:3000
+API_KEY=your_chosen_secret_here
 ```
 
 > If using Supabase: use the **Transaction pooler** URL (port 6543) for `DATABASE_URL` and the **Direct** URL (port 5432) for `DIRECT_URL`.
+> `API_KEY` is a secret you choose — it guards all record write/delete endpoints. Must match `NEXT_PUBLIC_API_KEY` in the frontend.
 
 **Frontend** — create `frontend/.env.local`:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_API_KEY=your_chosen_secret_here
 ```
 
 ### 3. Database
