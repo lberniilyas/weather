@@ -125,13 +125,17 @@ export async function get5DayForecast(query: string): Promise<ForecastDay[]> {
       const temps = slots.map((s: Record<string, any>) => s.main.temp as number);
       result.push({
         date,
-        temperature: Math.round(noon.main.temp),
-        minTemp: Math.round(Math.min(...temps)),
-        maxTemp: Math.round(Math.max(...temps)),
-        humidity: noon.main.humidity,
-        windSpeed: noon.wind.speed,
-        condition: noon.weather[0].main,
-        icon: noon.weather[0].icon,
+        temperature:   Math.round(noon.main.temp),
+        minTemp:       Math.round(Math.min(...temps)),
+        maxTemp:       Math.round(Math.max(...temps)),
+        feelsLike:     Math.round(noon.main.feels_like * 10) / 10,
+        humidity:      noon.main.humidity,
+        windSpeed:     noon.wind.speed,
+        pressure:      noon.main.pressure,
+        visibility:    noon.visibility ?? 10000,
+        cloudCoverage: noon.clouds?.all ?? 0,
+        condition:     noon.weather[0].main,
+        icon:          noon.weather[0].icon,
       });
     }
 

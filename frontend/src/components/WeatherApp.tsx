@@ -60,6 +60,22 @@ export function WeatherApp() {
     }
   }, []);
 
+  const displayWeather: WeatherData | null = weather && selectedDay
+    ? {
+        ...weather,
+        temperature:   selectedDay.temperature,
+        feelsLike:     selectedDay.feelsLike,
+        humidity:      selectedDay.humidity,
+        windSpeed:     selectedDay.windSpeed,
+        pressure:      selectedDay.pressure,
+        visibility:    selectedDay.visibility,
+        cloudCoverage: selectedDay.cloudCoverage,
+        condition:     selectedDay.condition,
+        description:   selectedDay.condition,
+        icon:          selectedDay.icon,
+      }
+    : weather;
+
   return (
     <>
       {/* Full-page background — static, slow Ken Burns zoom */}
@@ -129,32 +145,21 @@ export function WeatherApp() {
             aria-hidden="true"
           />
 
-          {/* Current + details */}
-          {(() => {
-            const displayData: WeatherData = selectedDay ? {
-              ...weather,
-              temperature:  selectedDay.temperature,
-              humidity:     selectedDay.humidity,
-              windSpeed:    selectedDay.windSpeed,
-              condition:    selectedDay.condition,
-              description:  selectedDay.condition,
-              icon:         selectedDay.icon,
-            } : weather;
-            return (
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            <div className="lg:col-span-2">
-              <WeatherCard
-                data={displayData}
-                forecastDay={selectedDay}
-                onClearForecast={() => setSelectedDay(null)}
-              />
+          {/* Current + details — both update when a forecast day is selected */}
+          {displayWeather && (
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+              <div className="lg:col-span-2">
+                <WeatherCard
+                  data={displayWeather}
+                  forecastDay={selectedDay}
+                  onClearForecast={() => setSelectedDay(null)}
+                />
+              </div>
+              <div className="lg:col-span-3">
+                <WeatherDetails data={displayWeather} />
+              </div>
             </div>
-            <div className="lg:col-span-3">
-              <WeatherDetails data={weather} />
-            </div>
-          </div>
-            );
-          })()}
+          )}
 
           {/* Forecast */}
           {forecast.length > 0 && (

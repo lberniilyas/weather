@@ -46,8 +46,12 @@ export interface ForecastDay {
   temperature: number;
   minTemp: number;
   maxTemp: number;
+  feelsLike: number;
   humidity: number;
   windSpeed: number;
+  pressure: number;
+  visibility: number;
+  cloudCoverage: number;
   condition: string;
   icon: string;
 }
